@@ -27,7 +27,34 @@ func (r *MovementRepo) Create(ctx context.Context, m *domain.Movement) (*domain.
 	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	return r.GetByID(ctx, m.ID)
+}
+
+func (r *MovementRepo) GetByID(ctx context.Context, id int64) (*domain.Movement, error) {
+	db := getConn(ctx, r.pool)
+	var m domain.Movement
+	var fromLoc, toLoc locationScan
+	err := db.QueryRow(ctx, `
+		SELECT mh.id, mh.machine_id, mh.from_location_id, mh.to_location_id, mh.moved_at, mh.created_at,
+		       fl.id, fl.address, fl.place_name, fl.latitude, fl.longitude, fl.created_at, fl.updated_at,
+		       tl.id, tl.address, tl.place_name, tl.latitude, tl.longitude, tl.created_at, tl.updated_at
+		FROM movement_history mh
+		LEFT JOIN locations fl ON mh.from_location_id = fl.id
+		JOIN locations tl ON mh.to_location_id = tl.id
+		WHERE mh.id = $1`, id).
+		Scan(
+			&m.ID, &m.MachineID, &m.FromLocationID, &m.ToLocationID, &m.MovedAt, &m.CreatedAt,
+			&fromLoc.id, &fromLoc.address, &fromLoc.placeName, &fromLoc.latitude, &fromLoc.longitude, &fromLoc.createdAt, &fromLoc.updatedAt,
+			&toLoc.id, &toLoc.address, &toLoc.placeName, &toLoc.latitude, &toLoc.longitude, &toLoc.createdAt, &toLoc.updatedAt,
+		)
+	if err != nil {
+		return nil, err
+	}
+	if fromLoc.id != nil {
+		m.FromLocation = fromLoc.toDomain()
+	}
+	m.ToLocation = toLoc.toDomain()
+	return &m, nil
 }
 
 func (r *MovementRepo) ListByMachineID(ctx context.Context, machineID int64) ([]domain.Movement, error) {
