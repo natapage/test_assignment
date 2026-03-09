@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package goldex.v1;
+
+option go_package = "github.com/natapage/test_assignment/backend/pkg/gen/goldex/v1;goldexv1";
+
+import "google/protobuf/timestamp.proto";
+import "goldex/v1/location.proto";
+
+message Movement {
+  int64 id = 1;
+  int64 machine_id = 2;
+  optional int64 from_location_id = 3;
+  int64 to_location_id = 4;
+  Location from_location = 5;
+  Location to_location = 6;
+  google.protobuf.Timestamp moved_at = 7;
+  google.protobuf.Timestamp created_at = 8;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package goldex.v1;
+
+option go_package = "github.com/natapage/test_assignment/backend/pkg/gen/goldex/v1;goldexv1";
+
+import "google/protobuf/timestamp.proto";
+
+message Location {
+  int64 id = 1;
+  string address = 2;
+  string place_name = 3;
+  optional double latitude = 4;
+  optional double longitude = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}

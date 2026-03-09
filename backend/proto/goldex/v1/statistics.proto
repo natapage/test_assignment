@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package goldex.v1;
+
+option go_package = "github.com/natapage/test_assignment/backend/pkg/gen/goldex/v1;goldexv1";
+
+import "google/protobuf/timestamp.proto";
+import "goldex/v1/location.proto";
+
+message LocationDuration {
+  int64 location_id = 1;
+  Location location = 2;
+  int32 days = 3;
+}
+
+message MovementsCount {
+  int64 machine_id = 1;
+  string machine_name = 2;
+  int32 count = 3;
+}
+
+message TimelineEntry {
+  google.protobuf.Timestamp moved_at = 1;
+  Location from_location = 2;
+  Location to_location = 3;
+}

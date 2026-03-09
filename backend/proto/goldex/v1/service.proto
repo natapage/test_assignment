@@ -1,0 +1,225 @@
+syntax = "proto3";
+
+package goldex.v1;
+
+option go_package = "github.com/natapage/test_assignment/backend/pkg/gen/goldex/v1;goldexv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "goldex/v1/machine.proto";
+import "goldex/v1/location.proto";
+import "goldex/v1/movement.proto";
+import "goldex/v1/statistics.proto";
+
+// ──────────────── Machine requests/responses ────────────────
+
+message ListMachinesRequest {}
+message ListMachinesResponse {
+  repeated Machine machines = 1;
+}
+
+message GetMachineRequest {
+  int64 id = 1;
+}
+message GetMachineResponse {
+  Machine machine = 1;
+}
+
+message CreateMachineRequest {
+  string name = 1;
+  string serial_number = 2;
+  bool enabled = 3;
+  optional int64 location_id = 4;
+}
+message CreateMachineResponse {
+  Machine machine = 1;
+}
+
+message UpdateMachineRequest {
+  int64 id = 1;
+  string name = 2;
+  string serial_number = 3;
+  bool enabled = 4;
+}
+message UpdateMachineResponse {
+  Machine machine = 1;
+}
+
+message DeleteMachineRequest {
+  int64 id = 1;
+}
+
+// ──────────────── Location requests/responses ────────────────
+
+message ListLocationsRequest {}
+message ListLocationsResponse {
+  repeated Location locations = 1;
+}
+
+message GetLocationRequest {
+  int64 id = 1;
+}
+message GetLocationResponse {
+  Location location = 1;
+}
+
+message CreateLocationRequest {
+  string address = 1;
+  string place_name = 2;
+  optional double latitude = 3;
+  optional double longitude = 4;
+}
+message CreateLocationResponse {
+  Location location = 1;
+}
+
+message UpdateLocationRequest {
+  int64 id = 1;
+  string address = 2;
+  string place_name = 3;
+  optional double latitude = 4;
+  optional double longitude = 5;
+}
+message UpdateLocationResponse {
+  Location location = 1;
+}
+
+message DeleteLocationRequest {
+  int64 id = 1;
+}
+
+// ──────────────── Movement requests/responses ────────────────
+
+message MoveMachineRequest {
+  int64 machine_id = 1;
+  int64 to_location_id = 2;
+}
+message MoveMachineResponse {
+  Movement movement = 1;
+}
+
+message GetMovementHistoryRequest {
+  int64 machine_id = 1;
+}
+message GetMovementHistoryResponse {
+  repeated Movement movements = 1;
+}
+
+// ──────────────── Statistics requests/responses ────────────────
+
+message GetLocationDurationsRequest {
+  int64 machine_id = 1;
+}
+message GetLocationDurationsResponse {
+  repeated LocationDuration durations = 1;
+}
+
+message GetMovementsCountRequest {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+message GetMovementsCountResponse {
+  repeated MovementsCount counts = 1;
+}
+
+message GetMachineTimelineRequest {
+  int64 machine_id = 1;
+}
+message GetMachineTimelineResponse {
+  repeated TimelineEntry entries = 1;
+}
+
+// ──────────────── Services ────────────────
+
+service MachineService {
+  rpc ListMachines(ListMachinesRequest) returns (ListMachinesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/machines"
+    };
+  }
+  rpc GetMachine(GetMachineRequest) returns (GetMachineResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/machines/{id}"
+    };
+  }
+  rpc CreateMachine(CreateMachineRequest) returns (CreateMachineResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/machines"
+      body: "*"
+    };
+  }
+  rpc UpdateMachine(UpdateMachineRequest) returns (UpdateMachineResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/machines/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteMachine(DeleteMachineRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/machines/{id}"
+    };
+  }
+}
+
+service LocationService {
+  rpc ListLocations(ListLocationsRequest) returns (ListLocationsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/locations"
+    };
+  }
+  rpc GetLocation(GetLocationRequest) returns (GetLocationResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/locations/{id}"
+    };
+  }
+  rpc CreateLocation(CreateLocationRequest) returns (CreateLocationResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/locations"
+      body: "*"
+    };
+  }
+  rpc UpdateLocation(UpdateLocationRequest) returns (UpdateLocationResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/locations/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteLocation(DeleteLocationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/locations/{id}"
+    };
+  }
+}
+
+service MovementService {
+  rpc MoveMachine(MoveMachineRequest) returns (MoveMachineResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/machines/{machine_id}/move"
+      body: "*"
+    };
+  }
+  rpc GetMovementHistory(GetMovementHistoryRequest) returns (GetMovementHistoryResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/machines/{machine_id}/movements"
+    };
+  }
+}
+
+service StatisticsService {
+  rpc GetLocationDurations(GetLocationDurationsRequest) returns (GetLocationDurationsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/durations/{machine_id}"
+    };
+  }
+  rpc GetMovementsCount(GetMovementsCountRequest) returns (GetMovementsCountResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/movements-count"
+    };
+  }
+  rpc GetMachineTimeline(GetMachineTimelineRequest) returns (GetMachineTimelineResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/timeline/{machine_id}"
+    };
+  }
+}

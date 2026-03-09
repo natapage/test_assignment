@@ -1,0 +1,882 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "goldex/v1/service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "MachineService"
+    },
+    {
+      "name": "LocationService"
+    },
+    {
+      "name": "MovementService"
+    },
+    {
+      "name": "StatisticsService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/locations": {
+      "get": {
+        "operationId": "LocationService_ListLocations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListLocationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "LocationService"
+        ]
+      },
+      "post": {
+        "operationId": "LocationService_CreateLocation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateLocationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateLocationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LocationService"
+        ]
+      }
+    },
+    "/api/v1/locations/{id}": {
+      "get": {
+        "operationId": "LocationService_GetLocation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetLocationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LocationService"
+        ]
+      },
+      "delete": {
+        "operationId": "LocationService_DeleteLocation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LocationService"
+        ]
+      },
+      "put": {
+        "operationId": "LocationService_UpdateLocation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateLocationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LocationServiceUpdateLocationBody"
+            }
+          }
+        ],
+        "tags": [
+          "LocationService"
+        ]
+      }
+    },
+    "/api/v1/machines": {
+      "get": {
+        "operationId": "MachineService_ListMachines",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMachinesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "MachineService"
+        ]
+      },
+      "post": {
+        "operationId": "MachineService_CreateMachine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateMachineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateMachineRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MachineService"
+        ]
+      }
+    },
+    "/api/v1/machines/{id}": {
+      "get": {
+        "operationId": "MachineService_GetMachine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetMachineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MachineService"
+        ]
+      },
+      "delete": {
+        "operationId": "MachineService_DeleteMachine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MachineService"
+        ]
+      },
+      "put": {
+        "operationId": "MachineService_UpdateMachine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateMachineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MachineServiceUpdateMachineBody"
+            }
+          }
+        ],
+        "tags": [
+          "MachineService"
+        ]
+      }
+    },
+    "/api/v1/machines/{machineId}/move": {
+      "post": {
+        "operationId": "MovementService_MoveMachine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MoveMachineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MovementServiceMoveMachineBody"
+            }
+          }
+        ],
+        "tags": [
+          "MovementService"
+        ]
+      }
+    },
+    "/api/v1/machines/{machineId}/movements": {
+      "get": {
+        "operationId": "MovementService_GetMovementHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetMovementHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "MovementService"
+        ]
+      }
+    },
+    "/api/v1/statistics/durations/{machineId}": {
+      "get": {
+        "operationId": "StatisticsService_GetLocationDurations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetLocationDurationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "StatisticsService"
+        ]
+      }
+    },
+    "/api/v1/statistics/movements-count": {
+      "get": {
+        "operationId": "StatisticsService_GetMovementsCount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetMovementsCountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "StatisticsService"
+        ]
+      }
+    },
+    "/api/v1/statistics/timeline/{machineId}": {
+      "get": {
+        "operationId": "StatisticsService_GetMachineTimeline",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetMachineTimelineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "StatisticsService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "LocationServiceUpdateLocationBody": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "placeName": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number",
+          "format": "double"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "MachineServiceUpdateMachineBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "serialNumber": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "MovementServiceMoveMachineBody": {
+      "type": "object",
+      "properties": {
+        "toLocationId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "goldexV1Location": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "address": {
+          "type": "string"
+        },
+        "placeName": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number",
+          "format": "double"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateLocationRequest": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "placeName": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number",
+          "format": "double"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1CreateLocationResponse": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "$ref": "#/definitions/goldexV1Location"
+        }
+      }
+    },
+    "v1CreateMachineRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "serialNumber": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "locationId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1CreateMachineResponse": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "$ref": "#/definitions/v1Machine"
+        }
+      }
+    },
+    "v1GetLocationDurationsResponse": {
+      "type": "object",
+      "properties": {
+        "durations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1LocationDuration"
+          }
+        }
+      }
+    },
+    "v1GetLocationResponse": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "$ref": "#/definitions/goldexV1Location"
+        }
+      }
+    },
+    "v1GetMachineResponse": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "$ref": "#/definitions/v1Machine"
+        }
+      }
+    },
+    "v1GetMachineTimelineResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TimelineEntry"
+          }
+        }
+      }
+    },
+    "v1GetMovementHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "movements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Movement"
+          }
+        }
+      }
+    },
+    "v1GetMovementsCountResponse": {
+      "type": "object",
+      "properties": {
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MovementsCount"
+          }
+        }
+      }
+    },
+    "v1ListLocationsResponse": {
+      "type": "object",
+      "properties": {
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/goldexV1Location"
+          }
+        }
+      }
+    },
+    "v1ListMachinesResponse": {
+      "type": "object",
+      "properties": {
+        "machines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Machine"
+          }
+        }
+      }
+    },
+    "v1LocationDuration": {
+      "type": "object",
+      "properties": {
+        "locationId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "location": {
+          "$ref": "#/definitions/goldexV1Location"
+        },
+        "days": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1Machine": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "serialNumber": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "locationId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "location": {
+          "$ref": "#/definitions/goldexV1Location"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MoveMachineResponse": {
+      "type": "object",
+      "properties": {
+        "movement": {
+          "$ref": "#/definitions/v1Movement"
+        }
+      }
+    },
+    "v1Movement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "machineId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fromLocationId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "toLocationId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fromLocation": {
+          "$ref": "#/definitions/goldexV1Location"
+        },
+        "toLocation": {
+          "$ref": "#/definitions/goldexV1Location"
+        },
+        "movedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1MovementsCount": {
+      "type": "object",
+      "properties": {
+        "machineId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "machineName": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1TimelineEntry": {
+      "type": "object",
+      "properties": {
+        "movedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fromLocation": {
+          "$ref": "#/definitions/goldexV1Location"
+        },
+        "toLocation": {
+          "$ref": "#/definitions/goldexV1Location"
+        }
+      }
+    },
+    "v1UpdateLocationResponse": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "$ref": "#/definitions/goldexV1Location"
+        }
+      }
+    },
+    "v1UpdateMachineResponse": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "$ref": "#/definitions/v1Machine"
+        }
+      }
+    }
+  }
+}
