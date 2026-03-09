@@ -1,89 +1,102 @@
 <template>
   <div>
-    <h1>Статистика</h1>
+    <h1 class="text-2xl font-semibold mb-6 text-foreground">Статистика</h1>
 
-    <div class="machine-select">
-      <label>Аппарат</label>
-      <select v-model="selectedMachineId" @change="loadStats">
-        <option value="" disabled>Выберите аппарат</option>
-        <option v-for="m in machines" :key="m.id" :value="m.id">
-          {{ m.name }} ({{ m.serialNumber }})
-        </option>
-      </select>
+    <div class="mb-8 space-y-2">
+      <Label>Аппарат</Label>
+      <Select v-model="selectedMachineId" @update:model-value="loadStats">
+        <SelectTrigger class="w-96">
+          <SelectValue placeholder="Выберите аппарат" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem v-for="m in machines" :key="m.id" :value="m.id">
+            {{ m.name }} ({{ m.serialNumber }})
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
-    <!-- Duration on locations -->
-    <div v-if="durations.length" class="section">
-      <h2>Дни на локациях</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Локация</th>
-            <th>Адрес</th>
-            <th>Дней</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="d in durations" :key="d.locationId">
-            <td>{{ d.location?.placeName }}</td>
-            <td>{{ d.location?.address }}</td>
-            <td>{{ d.days }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Card v-if="durations.length" class="mb-6">
+      <CardHeader>
+        <CardTitle class="text-lg">Дни на локациях</CardTitle>
+      </CardHeader>
+      <CardContent class="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Локация</TableHead>
+              <TableHead>Адрес</TableHead>
+              <TableHead class="text-right">Дней</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="d in durations" :key="d.locationId">
+              <TableCell class="font-medium">{{ d.location?.placeName }}</TableCell>
+              <TableCell>{{ d.location?.address }}</TableCell>
+              <TableCell class="text-right font-mono">{{ d.days }}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
 
-    <!-- Timeline -->
-    <div v-if="timeline.length" class="section">
-      <h2>Timeline перемещений</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Дата</th>
-            <th>Откуда</th>
-            <th>Куда</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(entry, i) in timeline" :key="i">
-            <td>{{ formatDate(entry.movedAt) }}</td>
-            <td>{{ entry.fromLocation?.placeName || 'Первая установка' }}</td>
-            <td>{{ entry.toLocation?.placeName }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Card v-if="timeline.length" class="mb-6">
+      <CardHeader>
+        <CardTitle class="text-lg">Timeline перемещений</CardTitle>
+      </CardHeader>
+      <CardContent class="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Дата</TableHead>
+              <TableHead>Откуда</TableHead>
+              <TableHead>Куда</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="(entry, i) in timeline" :key="i">
+              <TableCell class="text-muted-foreground whitespace-nowrap">{{ formatDate(entry.movedAt) }}</TableCell>
+              <TableCell>{{ entry.fromLocation?.placeName || 'Первая установка' }}</TableCell>
+              <TableCell class="font-medium">{{ entry.toLocation?.placeName }}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
 
-    <!-- Movements count -->
-    <div class="section">
-      <h2>Количество перемещений за период</h2>
-      <div class="date-row">
-        <div class="date-field">
-          <label>С</label>
-          <input type="date" v-model="dateFrom" />
+    <Card>
+      <CardHeader>
+        <CardTitle class="text-lg">Количество перемещений за период</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="flex items-end gap-4 mb-5">
+          <div class="flex flex-col gap-1.5">
+            <Label>С</Label>
+            <Input type="date" v-model="dateFrom" class="w-44" />
+          </div>
+          <span class="text-muted-foreground pb-2">&mdash;</span>
+          <div class="flex flex-col gap-1.5">
+            <Label>По</Label>
+            <Input type="date" v-model="dateTo" class="w-44" />
+          </div>
+          <Button @click="loadCounts">Показать</Button>
         </div>
-        <span class="date-separator">&mdash;</span>
-        <div class="date-field">
-          <label>По</label>
-          <input type="date" v-model="dateTo" />
-        </div>
-        <button class="btn-primary" @click="loadCounts">Показать</button>
-      </div>
-      <table v-if="counts.length">
-        <thead>
-          <tr>
-            <th>Аппарат</th>
-            <th>Перемещений</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="c in counts" :key="c.machineId">
-            <td>{{ c.machineName }}</td>
-            <td>{{ c.count }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <Table v-if="counts.length">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Аппарат</TableHead>
+              <TableHead class="text-right">Перемещений</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="c in counts" :key="c.machineId">
+              <TableCell class="font-medium">{{ c.machineName }}</TableCell>
+              <TableCell class="text-right font-mono">{{ c.count }}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
@@ -91,6 +104,12 @@
 import { ref, onMounted } from 'vue'
 import { api } from '@/api/client'
 import type { Machine, LocationDuration, TimelineEntry, MovementsCount } from '@/types'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 const machines = ref<Machine[]>([])
 const selectedMachineId = ref('')
@@ -128,62 +147,3 @@ onMounted(async () => {
   machines.value = await api.listMachines()
 })
 </script>
-
-<style scoped>
-.machine-select {
-  margin-bottom: 20px;
-}
-.machine-select label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #555;
-}
-.machine-select select {
-  width: 320px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-}
-.section {
-  margin-top: 28px;
-}
-.section h2 {
-  font-size: 18px;
-  margin-bottom: 14px;
-}
-.date-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.date-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.date-field label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #555;
-}
-.date-field input {
-  padding: 7px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  width: 160px;
-}
-.date-separator {
-  color: #999;
-  padding-bottom: 8px;
-  font-size: 16px;
-}
-.date-row .btn-primary {
-  height: 36px;
-  margin-bottom: 1px;
-}
-</style>

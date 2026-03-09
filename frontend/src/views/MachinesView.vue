@@ -1,59 +1,75 @@
 <template>
   <div>
-    <h1>Аппараты</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Название</th>
-          <th>Серийный номер</th>
-          <th>Статус</th>
-          <th>Локация</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="m in machines" :key="m.id">
-          <td>{{ m.id }}</td>
-          <td>{{ m.name }}</td>
-          <td>{{ m.serialNumber }}</td>
-          <td>{{ m.enabled ? 'Активен' : 'Отключён' }}</td>
-          <td>{{ m.location ? m.location.placeName + ' — ' + m.location.address : '—' }}</td>
-          <td>
-            <button class="btn-primary" @click="openMoveDialog(m)">Переместить</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <h1 class="text-2xl font-semibold mb-6 text-foreground">Аппараты</h1>
+    <Card>
+      <CardContent class="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Название</TableHead>
+              <TableHead>Серийный номер</TableHead>
+              <TableHead>Статус</TableHead>
+              <TableHead>Локация</TableHead>
+              <TableHead class="text-right">Действия</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="m in machines" :key="m.id">
+              <TableCell class="text-muted-foreground">{{ m.id }}</TableCell>
+              <TableCell class="font-medium">{{ m.name }}</TableCell>
+              <TableCell class="text-muted-foreground font-mono text-[13px]">{{ m.serialNumber }}</TableCell>
+              <TableCell>
+                <Badge :variant="m.enabled ? 'success' : 'secondary'">
+                  {{ m.enabled ? 'Активен' : 'Отключён' }}
+                </Badge>
+              </TableCell>
+              <TableCell>{{ m.location ? m.location.placeName + ' — ' + m.location.address : '—' }}</TableCell>
+              <TableCell class="text-right">
+                <Button size="sm" @click="openMoveDialog(m)">Переместить</Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
 
-    <div v-if="showMove" class="modal-overlay" @click.self="showMove = false">
-      <div class="modal">
-        <h2>Переместить {{ selectedMachine?.name }}</h2>
-        <div class="form-group">
-          <label>Текущая локация</label>
-          <input type="text" disabled :value="selectedMachine?.location?.placeName || '—'" />
+    <Dialog :open="showMove" @update:open="showMove = $event">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Переместить {{ selectedMachine?.name }}</DialogTitle>
+        </DialogHeader>
+        <div class="space-y-4 pt-2">
+          <div class="space-y-2">
+            <Label>Текущая локация</Label>
+            <Input type="text" disabled :value="selectedMachine?.location?.placeName || '—'" />
+          </div>
+          <div class="space-y-2">
+            <Label>Новая локация</Label>
+            <Select v-model="targetLocationId">
+              <SelectTrigger>
+                <SelectValue placeholder="Выберите локацию" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="loc in locations"
+                  :key="loc.id"
+                  :value="loc.id"
+                  :disabled="loc.id === selectedMachine?.locationId"
+                >
+                  {{ loc.placeName }} — {{ loc.address }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <p v-if="moveError" class="text-sm text-destructive">{{ moveError }}</p>
         </div>
-        <div class="form-group">
-          <label>Новая локация</label>
-          <select v-model="targetLocationId">
-            <option value="" disabled>Выберите локацию</option>
-            <option
-              v-for="loc in locations"
-              :key="loc.id"
-              :value="loc.id"
-              :disabled="loc.id === selectedMachine?.locationId"
-            >
-              {{ loc.placeName }} — {{ loc.address }}
-            </option>
-          </select>
-        </div>
-        <p v-if="moveError" class="error">{{ moveError }}</p>
-        <div class="modal-actions">
-          <button class="btn-secondary" @click="showMove = false">Отмена</button>
-          <button class="btn-primary" @click="doMove" :disabled="!targetLocationId">Переместить</button>
-        </div>
-      </div>
-    </div>
+        <DialogFooter class="pt-2">
+          <Button variant="outline" @click="showMove = false">Отмена</Button>
+          <Button @click="doMove" :disabled="!targetLocationId">Переместить</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -61,6 +77,14 @@
 import { ref, onMounted } from 'vue'
 import { api } from '@/api/client'
 import type { Machine, Location } from '@/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 const machines = ref<Machine[]>([])
 const locations = ref<Location[]>([])
