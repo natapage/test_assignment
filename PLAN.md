@@ -93,7 +93,7 @@ CREATE INDEX idx_movement_history_machine_moved ON movement_history(machine_id, 
 
 ## Часть 3: Backend — Repository и UseCase слои
 
-**Коммит после:** бизнес-логика реализована, unit-тесты проходят.
+**Коммит после:** бизнес-логика реализована, проект компилируется.
 
 ### Файлы:
 - `backend/internal/repository/interfaces.go`
