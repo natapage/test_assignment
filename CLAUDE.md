@@ -55,7 +55,11 @@ docker compose run --rm migrate
 - Миграции: `backend/migrations/` (golang-migrate, embedded в бинарник)
 - Данные из MySQL-дампа мигрированы в seed-миграции
 
-### Frontend: Vue 3 + TypeScript + Vite
+### Frontend: Vue 3 + TypeScript + Vite + Tailwind CSS 3 + shadcn-vue
+- Tailwind CSS 3 + PostCSS, конфиг: `frontend/tailwind.config.js`
+- shadcn-vue компоненты (Button, Table, Card, Dialog, Select, Input, Badge, Label): `src/components/ui/`
+- CSS-переменные темы (HSL): `src/assets/index.css`
+- Утилита `cn()` (clsx + tailwind-merge): `src/lib/utils.ts`
 - Leaflet/OpenStreetMap для карты
 - fetch-обёртка над REST API (`src/api/client.ts`)
 - nginx проксирует `/api/` на backend

@@ -5,7 +5,7 @@
 ## Стек
 
 - **Backend:** Go 1.23, gRPC + gRPC-Gateway, PostgreSQL 16, pgx/v5
-- **Frontend:** Vue 3, TypeScript, Vite, Leaflet/OpenStreetMap
+- **Frontend:** Vue 3, TypeScript, Vite, Tailwind CSS 3, shadcn-vue, Leaflet/OpenStreetMap
 - **Инфраструктура:** Docker Compose
 
 ## Запуск
@@ -71,8 +71,13 @@ go test ./...
 │   └── pkg/gen/goldex/v1/           # Сгенерированный код
 └── frontend/
     ├── src/
+    │   ├── components/ui/           # shadcn-vue компоненты
     │   ├── views/                   # Страницы (Vue)
     │   ├── api/client.ts            # API клиент
+    │   ├── lib/utils.ts             # Утилиты (cn)
+    │   ├── assets/index.css         # Tailwind + CSS-переменные темы
     │   └── router/                  # Маршрутизация
+    ├── tailwind.config.js           # Конфигурация Tailwind
+    ├── components.json              # Конфигурация shadcn-vue
     └── nginx.conf                   # Проксирование API
 ```
