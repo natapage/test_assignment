@@ -64,11 +64,10 @@ func (h *StatisticsHandler) GetMachineTimeline(ctx context.Context, req *pb.GetM
 	}
 	resp := &pb.GetMachineTimelineResponse{}
 	for _, e := range entries {
-		entry := e
 		resp.Entries = append(resp.Entries, &pb.TimelineEntry{
-			MovedAt:      timestamppb.New(entry.MovedAt),
-			FromLocation: locationToProto(entry.FromLocation),
-			ToLocation:   locationToProto(entry.ToLocation),
+			MovedAt:      timestamppb.New(e.MovedAt),
+			FromLocation: locationToProto(e.FromLocation),
+			ToLocation:   locationToProto(e.ToLocation),
 		})
 	}
 	return resp, nil

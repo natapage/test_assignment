@@ -6,12 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import L from 'leaflet'
 import { api } from '@/api/client'
 import type { Machine } from '@/types'
 
 const mapContainer = ref<HTMLDivElement>()
+let mapInstance: L.Map | null = null
 
 onMounted(async () => {
   const machines: Machine[] = await api.listMachines()
@@ -53,5 +54,12 @@ onMounted(async () => {
   if (bounds.length > 0) {
     map.fitBounds(bounds as L.LatLngBoundsExpression, { padding: [40, 40] })
   }
+
+  mapInstance = map
+})
+
+onUnmounted(() => {
+  mapInstance?.remove()
+  mapInstance = null
 })
 </script>

@@ -35,27 +35,27 @@ func NewMovementUseCase(
 }
 
 func (uc *MovementUseCase) MoveMachine(ctx context.Context, machineID, toLocationID int64) (*domain.Movement, error) {
-	machine, err := uc.machineRepo.GetByID(ctx, machineID)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := uc.locationRepo.GetByID(ctx, toLocationID); err != nil {
-		return nil, err
-	}
-
-	if machine.LocationID != nil && *machine.LocationID == toLocationID {
-		return nil, ErrSameLocation
-	}
-
-	movement := &domain.Movement{
-		MachineID:      machineID,
-		FromLocationID: machine.LocationID,
-		ToLocationID:   toLocationID,
-	}
-
 	var created *domain.Movement
-	err = uc.txManager.RunInTx(ctx, func(txCtx context.Context) error {
+	err := uc.txManager.RunInTx(ctx, func(txCtx context.Context) error {
+		machine, err := uc.machineRepo.GetByID(txCtx, machineID)
+		if err != nil {
+			return err
+		}
+
+		if _, err := uc.locationRepo.GetByID(txCtx, toLocationID); err != nil {
+			return err
+		}
+
+		if machine.LocationID != nil && *machine.LocationID == toLocationID {
+			return ErrSameLocation
+		}
+
+		movement := &domain.Movement{
+			MachineID:      machineID,
+			FromLocationID: machine.LocationID,
+			ToLocationID:   toLocationID,
+		}
+
 		created, err = uc.movementRepo.Create(txCtx, movement)
 		if err != nil {
 			return err

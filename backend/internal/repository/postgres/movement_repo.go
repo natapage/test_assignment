@@ -34,6 +34,8 @@ func (r *MovementRepo) GetByID(ctx context.Context, id int64) (*domain.Movement,
 	db := getConn(ctx, r.pool)
 	var m domain.Movement
 	var fromLoc, toLoc locationScan
+	fields := append([]any{&m.ID, &m.MachineID, &m.FromLocationID, &m.ToLocationID, &m.MovedAt, &m.CreatedAt}, fromLoc.scanFields()...)
+	fields = append(fields, toLoc.scanFields()...)
 	err := db.QueryRow(ctx, `
 		SELECT mh.id, mh.machine_id, mh.from_location_id, mh.to_location_id, mh.moved_at, mh.created_at,
 		       fl.id, fl.address, fl.place_name, fl.latitude, fl.longitude, fl.created_at, fl.updated_at,
@@ -42,11 +44,7 @@ func (r *MovementRepo) GetByID(ctx context.Context, id int64) (*domain.Movement,
 		LEFT JOIN locations fl ON mh.from_location_id = fl.id
 		JOIN locations tl ON mh.to_location_id = tl.id
 		WHERE mh.id = $1`, id).
-		Scan(
-			&m.ID, &m.MachineID, &m.FromLocationID, &m.ToLocationID, &m.MovedAt, &m.CreatedAt,
-			&fromLoc.id, &fromLoc.address, &fromLoc.placeName, &fromLoc.latitude, &fromLoc.longitude, &fromLoc.createdAt, &fromLoc.updatedAt,
-			&toLoc.id, &toLoc.address, &toLoc.placeName, &toLoc.latitude, &toLoc.longitude, &toLoc.createdAt, &toLoc.updatedAt,
-		)
+		Scan(fields...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +56,8 @@ func (r *MovementRepo) GetByID(ctx context.Context, id int64) (*domain.Movement,
 }
 
 func (r *MovementRepo) ListByMachineID(ctx context.Context, machineID int64) ([]domain.Movement, error) {
-	rows, err := r.pool.Query(ctx, `
+	db := getConn(ctx, r.pool)
+	rows, err := db.Query(ctx, `
 		SELECT mh.id, mh.machine_id, mh.from_location_id, mh.to_location_id, mh.moved_at, mh.created_at,
 		       fl.id, fl.address, fl.place_name, fl.latitude, fl.longitude, fl.created_at, fl.updated_at,
 		       tl.id, tl.address, tl.place_name, tl.latitude, tl.longitude, tl.created_at, tl.updated_at
@@ -76,11 +75,9 @@ func (r *MovementRepo) ListByMachineID(ctx context.Context, machineID int64) ([]
 	for rows.Next() {
 		var m domain.Movement
 		var fromLoc, toLoc locationScan
-		if err := rows.Scan(
-			&m.ID, &m.MachineID, &m.FromLocationID, &m.ToLocationID, &m.MovedAt, &m.CreatedAt,
-			&fromLoc.id, &fromLoc.address, &fromLoc.placeName, &fromLoc.latitude, &fromLoc.longitude, &fromLoc.createdAt, &fromLoc.updatedAt,
-			&toLoc.id, &toLoc.address, &toLoc.placeName, &toLoc.latitude, &toLoc.longitude, &toLoc.createdAt, &toLoc.updatedAt,
-		); err != nil {
+		fields := append([]any{&m.ID, &m.MachineID, &m.FromLocationID, &m.ToLocationID, &m.MovedAt, &m.CreatedAt}, fromLoc.scanFields()...)
+		fields = append(fields, toLoc.scanFields()...)
+		if err := rows.Scan(fields...); err != nil {
 			return nil, err
 		}
 		if fromLoc.id != nil {

@@ -17,7 +17,8 @@ func NewMachineRepo(pool *pgxpool.Pool) *MachineRepo {
 }
 
 func (r *MachineRepo) List(ctx context.Context) ([]domain.Machine, error) {
-	rows, err := r.pool.Query(ctx, `
+	db := getConn(ctx, r.pool)
+	rows, err := db.Query(ctx, `
 		SELECT m.id, m.name, m.serial_number, m.enabled, m.location_id,
 		       l.id, l.address, l.place_name, l.latitude, l.longitude, l.created_at, l.updated_at,
 		       m.created_at, m.updated_at
@@ -33,11 +34,9 @@ func (r *MachineRepo) List(ctx context.Context) ([]domain.Machine, error) {
 	for rows.Next() {
 		var m domain.Machine
 		var loc locationScan
-		if err := rows.Scan(
-			&m.ID, &m.Name, &m.SerialNumber, &m.Enabled, &m.LocationID,
-			&loc.id, &loc.address, &loc.placeName, &loc.latitude, &loc.longitude, &loc.createdAt, &loc.updatedAt,
-			&m.CreatedAt, &m.UpdatedAt,
-		); err != nil {
+		fields := append([]any{&m.ID, &m.Name, &m.SerialNumber, &m.Enabled, &m.LocationID}, loc.scanFields()...)
+		fields = append(fields, &m.CreatedAt, &m.UpdatedAt)
+		if err := rows.Scan(fields...); err != nil {
 			return nil, err
 		}
 		if loc.id != nil {
@@ -49,20 +48,19 @@ func (r *MachineRepo) List(ctx context.Context) ([]domain.Machine, error) {
 }
 
 func (r *MachineRepo) GetByID(ctx context.Context, id int64) (*domain.Machine, error) {
+	db := getConn(ctx, r.pool)
 	var m domain.Machine
 	var loc locationScan
-	err := r.pool.QueryRow(ctx, `
+	fields := append([]any{&m.ID, &m.Name, &m.SerialNumber, &m.Enabled, &m.LocationID}, loc.scanFields()...)
+	fields = append(fields, &m.CreatedAt, &m.UpdatedAt)
+	err := db.QueryRow(ctx, `
 		SELECT m.id, m.name, m.serial_number, m.enabled, m.location_id,
 		       l.id, l.address, l.place_name, l.latitude, l.longitude, l.created_at, l.updated_at,
 		       m.created_at, m.updated_at
 		FROM machines m
 		LEFT JOIN locations l ON m.location_id = l.id
 		WHERE m.id = $1`, id).
-		Scan(
-			&m.ID, &m.Name, &m.SerialNumber, &m.Enabled, &m.LocationID,
-			&loc.id, &loc.address, &loc.placeName, &loc.latitude, &loc.longitude, &loc.createdAt, &loc.updatedAt,
-			&m.CreatedAt, &m.UpdatedAt,
-		)
+		Scan(fields...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +71,8 @@ func (r *MachineRepo) GetByID(ctx context.Context, id int64) (*domain.Machine, e
 }
 
 func (r *MachineRepo) Create(ctx context.Context, m *domain.Machine) (*domain.Machine, error) {
-	err := r.pool.QueryRow(ctx, `
+	db := getConn(ctx, r.pool)
+	err := db.QueryRow(ctx, `
 		INSERT INTO machines (name, serial_number, enabled, location_id)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, created_at, updated_at`,
@@ -86,7 +85,8 @@ func (r *MachineRepo) Create(ctx context.Context, m *domain.Machine) (*domain.Ma
 }
 
 func (r *MachineRepo) Update(ctx context.Context, m *domain.Machine) (*domain.Machine, error) {
-	_, err := r.pool.Exec(ctx, `
+	db := getConn(ctx, r.pool)
+	_, err := db.Exec(ctx, `
 		UPDATE machines SET name = $2, serial_number = $3, enabled = $4, updated_at = NOW()
 		WHERE id = $1`,
 		m.ID, m.Name, m.SerialNumber, m.Enabled)
@@ -97,7 +97,8 @@ func (r *MachineRepo) Update(ctx context.Context, m *domain.Machine) (*domain.Ma
 }
 
 func (r *MachineRepo) Delete(ctx context.Context, id int64) error {
-	_, err := r.pool.Exec(ctx, `DELETE FROM machines WHERE id = $1`, id)
+	db := getConn(ctx, r.pool)
+	_, err := db.Exec(ctx, `DELETE FROM machines WHERE id = $1`, id)
 	return err
 }
 

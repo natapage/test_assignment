@@ -17,7 +17,7 @@ func NewLocationRepo(pool *pgxpool.Pool) *LocationRepo {
 }
 
 func (r *LocationRepo) List(ctx context.Context) ([]domain.Location, error) {
-	rows, err := r.pool.Query(ctx, `
+	rows, err := getConn(ctx, r.pool).Query(ctx, `
 		SELECT id, address, place_name, latitude, longitude, created_at, updated_at
 		FROM locations ORDER BY id`)
 	if err != nil {
@@ -38,7 +38,7 @@ func (r *LocationRepo) List(ctx context.Context) ([]domain.Location, error) {
 
 func (r *LocationRepo) GetByID(ctx context.Context, id int64) (*domain.Location, error) {
 	var l domain.Location
-	err := r.pool.QueryRow(ctx, `
+	err := getConn(ctx, r.pool).QueryRow(ctx, `
 		SELECT id, address, place_name, latitude, longitude, created_at, updated_at
 		FROM locations WHERE id = $1`, id).
 		Scan(&l.ID, &l.Address, &l.PlaceName, &l.Latitude, &l.Longitude, &l.CreatedAt, &l.UpdatedAt)
@@ -49,7 +49,7 @@ func (r *LocationRepo) GetByID(ctx context.Context, id int64) (*domain.Location,
 }
 
 func (r *LocationRepo) Create(ctx context.Context, l *domain.Location) (*domain.Location, error) {
-	err := r.pool.QueryRow(ctx, `
+	err := getConn(ctx, r.pool).QueryRow(ctx, `
 		INSERT INTO locations (address, place_name, latitude, longitude)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, address, place_name, latitude, longitude, created_at, updated_at`,
@@ -62,7 +62,7 @@ func (r *LocationRepo) Create(ctx context.Context, l *domain.Location) (*domain.
 }
 
 func (r *LocationRepo) Update(ctx context.Context, l *domain.Location) (*domain.Location, error) {
-	err := r.pool.QueryRow(ctx, `
+	err := getConn(ctx, r.pool).QueryRow(ctx, `
 		UPDATE locations SET address = $2, place_name = $3, latitude = $4, longitude = $5, updated_at = NOW()
 		WHERE id = $1
 		RETURNING id, address, place_name, latitude, longitude, created_at, updated_at`,
@@ -75,6 +75,6 @@ func (r *LocationRepo) Update(ctx context.Context, l *domain.Location) (*domain.
 }
 
 func (r *LocationRepo) Delete(ctx context.Context, id int64) error {
-	_, err := r.pool.Exec(ctx, `DELETE FROM locations WHERE id = $1`, id)
+	_, err := getConn(ctx, r.pool).Exec(ctx, `DELETE FROM locations WHERE id = $1`, id)
 	return err
 }

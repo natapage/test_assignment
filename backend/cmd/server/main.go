@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -129,7 +130,9 @@ func main() {
 	log.Println("shutting down...")
 
 	grpcServer.GracefulStop()
-	httpServer.Shutdown(ctx)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+	httpServer.Shutdown(shutdownCtx)
 	log.Println("server stopped")
 }
 

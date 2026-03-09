@@ -44,11 +44,9 @@ func (r *StatisticsRepo) GetLocationDurations(ctx context.Context, machineID int
 	for rows.Next() {
 		var d domain.LocationDuration
 		var loc locationScan
-		if err := rows.Scan(
-			&d.LocationID,
-			&loc.id, &loc.address, &loc.placeName, &loc.latitude, &loc.longitude, &loc.createdAt, &loc.updatedAt,
-			&d.Days,
-		); err != nil {
+		fields := append([]any{&d.LocationID}, loc.scanFields()...)
+		fields = append(fields, &d.Days)
+		if err := rows.Scan(fields...); err != nil {
 			return nil, err
 		}
 		d.Location = loc.toDomain()
@@ -102,11 +100,9 @@ func (r *StatisticsRepo) GetMachineTimeline(ctx context.Context, machineID int64
 	for rows.Next() {
 		var e domain.TimelineEntry
 		var fromLoc, toLoc locationScan
-		if err := rows.Scan(
-			&e.MovedAt,
-			&fromLoc.id, &fromLoc.address, &fromLoc.placeName, &fromLoc.latitude, &fromLoc.longitude, &fromLoc.createdAt, &fromLoc.updatedAt,
-			&toLoc.id, &toLoc.address, &toLoc.placeName, &toLoc.latitude, &toLoc.longitude, &toLoc.createdAt, &toLoc.updatedAt,
-		); err != nil {
+		fields := append([]any{&e.MovedAt}, fromLoc.scanFields()...)
+		fields = append(fields, toLoc.scanFields()...)
+		if err := rows.Scan(fields...); err != nil {
 			return nil, err
 		}
 		if fromLoc.id != nil {

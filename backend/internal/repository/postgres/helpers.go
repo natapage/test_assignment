@@ -17,6 +17,10 @@ type locationScan struct {
 	updatedAt *time.Time
 }
 
+func (ls *locationScan) scanFields() []any {
+	return []any{&ls.id, &ls.address, &ls.placeName, &ls.latitude, &ls.longitude, &ls.createdAt, &ls.updatedAt}
+}
+
 func (ls *locationScan) toDomain() *domain.Location {
 	if ls.id == nil {
 		return nil
